@@ -1,6 +1,7 @@
-[gd_scene load_steps=18 format=3 uid="uid://27622ar61pce"]
+[gd_scene load_steps=24 format=3 uid="uid://27622ar61pce"]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_ejjbu"]
+[ext_resource type="Texture2D" uid="uid://tulpfg5pirv3" path="res://sprite/Texture/wheat.png" id="2_cuo3t"]
 [ext_resource type="Texture2D" uid="uid://dopgw13feihe1" path="res://sprite/Texture/TX Struct.png" id="2_m7aj7"]
 [ext_resource type="Texture2D" uid="uid://bbh00avp37bjg" path="res://sprite/Texture/TX Tileset Grass.png" id="3_4wwnm"]
 [ext_resource type="Texture2D" uid="uid://bstk0utdicsrl" path="res://sprite/Texture/TX Tileset Wall.png" id="3_f8bp8"]
@@ -8,8 +9,21 @@
 [ext_resource type="Texture2D" uid="uid://bsyj68e5gs5to" path="res://sprite/Texture/TX Props.png" id="6_kghc3"]
 [ext_resource type="Texture2D" uid="uid://cb8qvos2yls4q" path="res://sprite/Texture/TX Player.png" id="6_kjalq"]
 [ext_resource type="Texture2D" uid="uid://0jo5kqgvj71j" path="res://sprite/Texture/TX Shadow.png" id="7_vuavj"]
+[ext_resource type="Shader" path="res://shader/fog.gdshader" id="9_o36d7"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_l5jbp"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_eobub"]
+texture = ExtResource("2_cuo3t")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+0:0/0/terrain_set = 0
+0:0/0/terrain = 2
+0:0/0/terrains_peering_bit/bottom_side = 2
+0:1/0 = 0
+0:1/0/terrain_set = 0
+0:1/0/terrain = 2
+0:1/0/terrains_peering_bit/top_side = 2
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_nk7mc"]
 texture = ExtResource("2_m7aj7")
@@ -2076,6 +2090,8 @@ terrain_set_0/terrain_0/name = "maze"
 terrain_set_0/terrain_0/color = Color(0.698546, 0.0706538, 0.308583, 1)
 terrain_set_0/terrain_1/name = "grass"
 terrain_set_0/terrain_1/color = Color(0.175454, 0.461803, 0.688431, 1)
+terrain_set_0/terrain_2/name = "wheat"
+terrain_set_0/terrain_2/color = Color(0.581239, 0.4567, 0.13373, 1)
 terrain_set_1/mode = 0
 terrain_set_1/terrain_0/name = "floor"
 terrain_set_1/terrain_0/color = Color(0.533131, 0.334041, 0.0571271, 1)
@@ -2088,8 +2104,24 @@ sources/12 = SubResource("TileSetAtlasSource_wxflv")
 sources/13 = SubResource("TileSetAtlasSource_rj8pp")
 sources/14 = SubResource("TileSetAtlasSource_et64x")
 sources/16 = SubResource("TileSetAtlasSource_5pptu")
+sources/0 = SubResource("TileSetAtlasSource_eobub")
 
-[node name="Node2D" type="Node2D"]
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_jnytv"]
+frequency = 0.0015
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_kv88k"]
+width = 1920
+height = 1080
+seamless = true
+noise = SubResource("FastNoiseLite_jnytv")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_cpea8"]
+shader = ExtResource("9_o36d7")
+shader_parameter/density = 1.0
+shader_parameter/speed = Vector2(0.02, 0.01)
+shader_parameter/noise_texture = SubResource("NoiseTexture2D_kv88k")
+
+[node name="main" type="Node2D"]
 y_sort_enabled = true
 script = ExtResource("1_ejjbu")
 
@@ -2103,5 +2135,18 @@ layer_1/name = "wall"
 layer_2/name = "props"
 layer_2/y_sort_enabled = true
 layer_2/z_index = 1
+layer_2/tile_data = PackedInt32Array(-65553, 458766, 7, -65552, 458766, 7, -65551, 458766, 7, -65550, 458766, 7, -65549, 458766, 7, -65548, 458766, 7, -65547, 458766, 7, -65546, 458766, 7, -65545, 458766, 7, -65544, 458766, 7, -327697, 0, 0, -327696, 0, 0, -327695, 0, 0, -327694, 0, 0, -327693, 0, 0, -327692, 0, 0, -327691, 0, 0, -327690, 0, 0, -327689, 0, 0, -327688, 0, 0, -327687, 0, 0, -262161, 0, 1, -262160, 0, 1, -262159, 0, 1, -262158, 0, 1, -262157, 0, 1, -262156, 0, 1, -262155, 0, 1, -262154, 0, 1, -262153, 0, 1, -262152, 0, 1, -262151, 0, 1)
 layer_3/name = "props_light"
-layer_3/z_index = 2
+layer_3/y_sort_enabled = true
+layer_3/z_index = 1
+
+[node name="ParallaxBackground" type="ParallaxBackground" parent="."]
+layer = 6
+
+[node name="ParallaxLayer" type="ParallaxLayer" parent="ParallaxBackground"]
+motion_mirroring = Vector2(1920, 1080)
+
+[node name="ColorRect" type="ColorRect" parent="ParallaxBackground/ParallaxLayer"]
+material = SubResource("ShaderMaterial_cpea8")
+offset_right = 1920.0
+offset_bottom = 1080.0

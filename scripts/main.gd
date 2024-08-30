@@ -2,6 +2,7 @@ extends Node2D
 
 var character = load("res://scenes/character.tscn")
 var target = load("res://scenes/node_2d.tscn")
+var fog = load("res://scenes/fog.tscn")
 
 @onready var tileMap = $TileMap
 
@@ -14,17 +15,16 @@ var steps = 4 		#default 4
 
 var map = []
 
-
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	var instance = character.instantiate()
 	add_child(instance)
+	map_gen_filling_wheat()
 	#map_gen_filling()
-	map_gen_filling()
-	generate_map()
-	for i in range(steps):
-		map = simulate_step()
-	draw_map()
+	#enerate_map()
+	#for i in range(steps):
+	#	map = simulate_step()
+	#draw_map()
 	pass 
 
 
@@ -39,6 +39,15 @@ func map_gen_filling(): #заполняем карту для клеточног
 			cell_position = Vector2i(j, i)
 			positions.append(cell_position)
 	tileMap.set_cells_terrain_connect(0, positions, 0, 1, true)
+
+func map_gen_filling_wheat(): #заполняем карту для клеточного автомата
+	var positions = []
+	for i in range(height-99):
+		for j in range(width-90):
+			cell_position = Vector2i(j, i)
+			positions.append(cell_position)
+	#(int layer, Vector2i[] cells, int terrain_set, int terrain, bool ignore_empty_terrains=true )
+	tileMap.set_cells_terrain_connect(3, positions, 0, 2, true)
 
 func generate_map():
 	map.resize(height)
