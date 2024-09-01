@@ -4,6 +4,7 @@ extends CharacterBody2D
 @onready var weapon = $Weapon
 @onready var collision = $CollisionShape2D
 
+
 const speed = 100  #стандартная скорость
 const dash_speed = 400  # скорость рывка
 const dash_duration = 0.1  # Длительность рывка

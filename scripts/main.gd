@@ -5,6 +5,7 @@ var target = load("res://scenes/node_2d.tscn")
 var fog = load("res://scenes/fog.tscn")
 
 @onready var tileMap = $TileMap
+@onready var wheat_tilemap = $TileMap2
 
 var height = 100
 var width = 100
@@ -39,15 +40,21 @@ func map_gen_filling(): #заполняем карту для клеточног
 			cell_position = Vector2i(j, i)
 			positions.append(cell_position)
 	tileMap.set_cells_terrain_connect(0, positions, 0, 1, true)
-
-func map_gen_filling_wheat(): #заполняем карту для клеточного автомата
+func map_gen_filling_wheat(): # заполняем карту для клеточного автомата
 	var positions = []
-	for i in range(height-99):
-		for j in range(width-90):
-			cell_position = Vector2i(j, i)
+	for i in range(height):
+		if i % 2 == 0: # Пропускаем каждую вторую строку
+			continue
+		for j in range(width):
+			var cell_position = Vector2i(j, i)
 			positions.append(cell_position)
-	#(int layer, Vector2i[] cells, int terrain_set, int terrain, bool ignore_empty_terrains=true )
-	tileMap.set_cells_terrain_connect(3, positions, 0, 2, true)
+	
+	# (int layer, Vector2i[] cells, int terrain_set, int terrain, bool ignore_empty_terrains=true )
+	wheat_tilemap.set_cells_terrain_connect(0, positions, 0, 0, true)
+	wheat_tilemap.set_cells_terrain_connect(1, positions, 0, 1, true)
+	wheat_tilemap.set_cells_terrain_connect(2, positions, 0, 2, true)
+	wheat_tilemap.set_cells_terrain_connect(3, positions, 0, 3, true)
+	wheat_tilemap.set_cells_terrain_connect(4, positions, 0, 4, true)
 
 func generate_map():
 	map.resize(height)
